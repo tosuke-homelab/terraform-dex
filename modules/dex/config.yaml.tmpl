@@ -1,0 +1,31 @@
+issuer: https://id.tosuke.me
+
+storage:
+  type: ${db.scheme}
+  config:
+    host: ${db.host}
+    %{ if db.port != null }port: ${db.port}%{ endif }
+    user: ${db.user}
+    password: ${db.password}
+    database: ${db.database}
+
+web:
+  http: 0.0.0.0:8080
+grpc:
+  addr: 0.0.0.0:8081
+  reflection: true
+
+connectors:
+  - type: github
+    id: github
+    name: GitHub
+    config:
+      clientID: ${github.clientID}
+      clientSecret: ${github.clientSecret}
+      redirectURI: https://id.tosuke.me/callback
+
+      orgs:
+        - name: tosuke-homelab
+        - name: linkage-community
+          teams:
+            - developers

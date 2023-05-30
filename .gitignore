@@ -1,0 +1,10 @@
+# Nix/direnv
+.direnv/
+.env
+
+# VSCode
+.vscode/*
+!.vscode/extensions.json
+
+# Terraform
+.terraform/
