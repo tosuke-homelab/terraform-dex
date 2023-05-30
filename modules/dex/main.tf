@@ -22,23 +22,23 @@ locals {
     }
     web = { http = "0.0.0.0:8080" }
     grpc = {
-      addr = "0.0.0.0:8081"
+      addr       = "0.0.0.0:8081"
       reflection = true
     }
 
     connectors = [
       {
         type = "github"
-        id = "github"
+        id   = "github"
         name = "GitHub"
         config = {
-          clientID = local.github.clientID
+          clientID     = local.github.clientID
           clientSecret = local.github.clientSecret
-          redirectURI = "https://id.tosuke.me/callback"
+          redirectURI  = "https://id.tosuke.me/callback"
           orgs = [
             { name = "tosuke-homelab" },
             {
-              name = "linckage-community"
+              name  = "linckage-community"
               teams = ["developers"]
             }
           ]

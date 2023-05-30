@@ -9,15 +9,15 @@ variable "PROJECT_REGION" {
 }
 
 variable "DEX_DB_URL" {
-  type = string
+  type        = string
   description = "The URL of the database to connect to"
 }
 
 variable "DEX_GITHUB_CLIENT_ID" {
-  type = string
+  type        = string
   description = "The GitHub OAuth client ID"
 }
 variable "DEX_GITHUB_CLIENT_SECRET" {
-  type = string
+  type        = string
   description = "The GitHub OAuth client secret"
 }
