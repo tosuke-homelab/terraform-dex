@@ -7,10 +7,47 @@ locals {
   }
 
   db = regex("^(?P<scheme>[^:/?#]+)://(?P<user>[^:/?#]+):(?P<password>[^:/?#]+)@(?P<host>[^:/?#]+)(?::(?P<port>[^:/?#]+))?/(?P<database>[^:/?#]+)$", var.db_url)
-  config = templatefile("${path.module}/config.yaml.tmpl", {
-    db : local.db
-    github : local.github
-  })
+
+  config = {
+    issuer = "https://id.tosuke.me"
+    storage = {
+      type = local.db.scheme
+      config = {
+        host     = local.db.host
+        port     = coalesce(tonumber(local.db.port), local.db.scheme == "mysql" ? 3306 : 5432)
+        user     = local.db.user
+        password = local.db.password
+        database = local.db.database
+      }
+    }
+    web = { http = "0.0.0.0:8080" }
+    grpc = {
+      addr = "0.0.0.0:8081"
+      reflection = true
+    }
+
+    connectors = [
+      {
+        type = "github"
+        id = "github"
+        name = "GitHub"
+        config = {
+          clientID = local.github.clientID
+          clientSecret = local.github.clientSecret
+          redirectURI = "https://id.tosuke.me/callback"
+          orgs = [
+            { name = "tosuke-homelab" },
+            {
+              name = "linckage-community"
+              teams = ["developers"]
+            }
+          ]
+        }
+      }
+    ]
+  }
+
+  configData = yamlencode(local.config)
 
   location = "asia-northeast1"
 
@@ -41,7 +78,7 @@ resource "google_secret_manager_secret" "dex_config" {
 resource "google_secret_manager_secret_version" "dex_config_data" {
   secret = google_secret_manager_secret.dex_config.id
 
-  secret_data = local.config
+  secret_data = local.configData
 }
 
 resource "google_secret_manager_secret_iam_member" "dex_config_access" {
