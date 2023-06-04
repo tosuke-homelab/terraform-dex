@@ -16,7 +16,7 @@
       let 
         pkgs = nixpkgs.legacyPackages.${system};
         devdeps = with pkgs; [
-          terraform
+          terraform_1
           (google-cloud-sdk.withExtraComponents (with google-cloud-sdk.components; [
             cloud-run-proxy
           ]))

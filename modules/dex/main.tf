@@ -79,13 +79,18 @@ resource "google_secret_manager_secret_version" "dex_config_data" {
   secret = google_secret_manager_secret.dex_config.id
 
   secret_data = local.configData
+
+  depends_on = [google_secret_manager_secret.dex_config]
 }
 
 resource "google_secret_manager_secret_iam_member" "dex_config_access" {
   secret_id  = google_secret_manager_secret.dex_config.id
   role       = "roles/secretmanager.secretAccessor"
   member     = "serviceAccount:${google_service_account.dex_sa.email}"
-  depends_on = [google_secret_manager_secret.dex_config]
+  depends_on = [
+    google_service_account.dex_sa,
+    google_secret_manager_secret.dex_config
+  ]
 }
 
 locals {

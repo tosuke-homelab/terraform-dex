@@ -11,7 +11,7 @@ terraform {
     organization = "tosuke-homelab"
 
     workspaces {
-      name = "terraform-gcloud"
+      name = "terraform-dex"
     }
   }
 }
