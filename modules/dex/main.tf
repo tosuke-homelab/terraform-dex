@@ -142,7 +142,7 @@ resource "google_cloud_run_v2_service" "services" {
     containers {
       name = "dex"
 
-      image   = "docker.io/dexidp/dex:v2.36.0-distroless"
+      image   = "docker.io/dexidp/dex:v2.35.3-distroless"
       command = ["/usr/local/bin/docker-entrypoint", "dex", "serve", "/etc/dex/cfg/config.yaml"]
 
       ports {
