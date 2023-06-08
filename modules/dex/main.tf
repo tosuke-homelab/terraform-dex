@@ -33,7 +33,7 @@ locals {
           orgs = [
             { name = "tosuke-homelab" },
             {
-              name  = "linckage-community"
+              name  = "linkcage-community"
               teams = ["developers"]
             }
           ]
