@@ -28,6 +28,11 @@ variable "DEX_DB_USER" {
   description = "The database user"
 }
 
+variable "DEX_DB_PASSWORD" {
+  type        = string
+  description = "The database password"
+}
+
 variable "DEX_DB_PASSWORD_SECRET_ID" {
   type        = string
   description = "The GCP Secret ID of the database password"
