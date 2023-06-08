@@ -1,6 +1,4 @@
 locals {
-  name = "dexidp"
-
   github = {
     clientID = var.github_client_id
   }
@@ -57,8 +55,8 @@ locals {
 }
 
 resource "google_service_account" "dex_sa" {
-  account_id  = "${local.name}-sa"
-  description = "Service Account for ${local.name}"
+  account_id  = "dexidp-sa"
+  description = "Service Account for dexidp"
 }
 
 resource "google_secret_manager_secret" "dex_config" {
@@ -125,7 +123,7 @@ locals {
 resource "google_cloud_run_v2_service" "services" {
   for_each = local.services
 
-  name     = "${local.name}-${each.key}"
+  name     = "dexidp-${each.key}"
   ingress  = "INGRESS_TRAFFIC_ALL"
   location = local.location
 
@@ -167,6 +165,16 @@ resource "google_cloud_run_v2_service" "services" {
         value_source {
           secret_key_ref {
             secret  = data.google_secret_manager_secret.dex_github_client_secret.name
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DB_PASSWORD"
+        value_source {
+          secret_key_ref {
+            secret  = data.google_secret_manager_secret.dex_db_password.name
             version = "latest"
           }
         }
