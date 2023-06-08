@@ -10,7 +10,7 @@ locals {
       config = {
         host     = var.db.host
         user     = var.db.user
-        password = var.db_pass
+        password = "{{ .Env.DB_PASSWORD }}"
         database = var.db.name
       }
     }

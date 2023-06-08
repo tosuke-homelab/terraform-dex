@@ -8,10 +8,6 @@ variable "db" {
   })
 }
 
-variable "db_pass" {
-  type = string
-}
-
 variable "github_client_id" {
   type = string
 }
