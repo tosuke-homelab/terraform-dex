@@ -66,7 +66,7 @@ resource "google_service_account" "dex_sa" {
 }
 
 resource "google_secret_manager_secret" "dex_config" {
-  secret_id = "${local.name}_dex_config"
+  secret_id = "dexidp-config"
 
   labels = local.commonLabels
 
