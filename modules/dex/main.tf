@@ -84,13 +84,19 @@ resource "google_secret_manager_secret_version" "dex_config_data" {
 }
 
 resource "google_secret_manager_secret_iam_member" "dex_config_access" {
-  secret_id  = google_secret_manager_secret.dex_config.id
-  role       = "roles/secretmanager.secretAccessor"
-  member     = "serviceAccount:${google_service_account.dex_sa.email}"
-  depends_on = [
-    google_service_account.dex_sa,
-    google_secret_manager_secret.dex_config
-  ]
+  secret_id = google_secret_manager_secret.dex_config.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.dex_sa.email}"
+}
+
+data "google_secret_manager_secret" "dex_github_client_secret" {
+  secret_id = "dexidp-github-client-secret"
+}
+
+resource "google_secret_manager_secret_iam_member" "dex_github_client_secret_access" {
+  secret_id = data.google_secret_manager_secret.dex_github_client_secret.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.dex_sa.email}"
 }
 
 locals {
