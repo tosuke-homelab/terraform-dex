@@ -1,7 +1,7 @@
 locals {
   github = {
-    clientID                = var.github_client_id
-    clientSecretGCPSecretID = var.github_client_secret_secret_id
+    clientID                = var.github_connector.client_id
+    clientSecretGCPSecretID = var.github_connector.client_secret_secret_id
   }
 
   config = {
