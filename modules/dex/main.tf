@@ -33,7 +33,7 @@ locals {
         name = "GitHub"
         config = {
           clientID     = local.github.clientID
-          clientSecret = "{{ .Env.GITHUB_CLIENT_SECRET }}"
+          clientSecret = local.github.clientSecret
           redirectURI  = "https://id.tosuke.me/callback"
           orgs = [
             { name = "tosuke-homelab" },
@@ -84,25 +84,13 @@ resource "google_secret_manager_secret_version" "dex_config_data" {
 }
 
 resource "google_secret_manager_secret_iam_member" "dex_config_access" {
-  secret_id = google_secret_manager_secret.dex_config.id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.dex_sa.email}"
-}
-
-resource "google_secret_manager_secret" "dex_github_client_secret" {
-  secret_id = "dexidp-github-client-secret"
-
-  labels = local.commonLabels
-
-  replication {
-    automatic = true
-  }
-}
-
-resource "google_secret_manager_secret_iam_member" "dex_github_client_secret_access" {
-  secret_id = google_secret_manager_secret.dex_github_client_secret.id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.dex_sa.email}"
+  secret_id  = google_secret_manager_secret.dex_config.id
+  role       = "roles/secretmanager.secretAccessor"
+  member     = "serviceAccount:${google_service_account.dex_sa.email}"
+  depends_on = [
+    google_service_account.dex_sa,
+    google_secret_manager_secret.dex_config
+  ]
 }
 
 locals {
@@ -160,16 +148,6 @@ resource "google_cloud_run_v2_service" "services" {
       ports {
         name           = each.value.ports.name
         container_port = each.value.ports.container_port
-      }
-
-      env {
-        name = "GITHUB_CLIENT_SECRET"
-        value_source {
-          secret_key_ref {
-            secret  = google_secret_manager_secret.dex_github_client_secret.name
-            version = "latest"
-          }
-        }
       }
 
       volume_mounts {
