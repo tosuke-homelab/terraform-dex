@@ -159,7 +159,7 @@ resource "google_cloud_run_v2_service" "services" {
         name = "GITHUB_CLIENT_SECRET"
         value_source {
           secret_key_ref {
-            secret  = google_secret_manager_secret.dex_github_client_secret.name
+            secret  = data.google_secret_manager_secret.dex_github_client_secret.name
             version = "latest"
           }
         }
