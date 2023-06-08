@@ -33,7 +33,7 @@ locals {
           orgs = [
             { name = "tosuke-homelab" },
             {
-              name  = "linkcage-community"
+              name  = "linkage-community"
               teams = ["developers"]
             }
           ]
@@ -187,6 +187,8 @@ resource "google_cloud_run_v2_service" "services" {
       }
     }
   }
+
+  depends_on = [google_secret_manager_secret_version.dex_config_data.id]
 }
 
 resource "google_cloud_run_v2_service_iam_binding" "dex_web_public" {
