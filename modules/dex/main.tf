@@ -142,7 +142,7 @@ resource "google_cloud_run_v2_service" "services" {
         secret       = google_secret_manager_secret.dex_config.name
         default_mode = 292 # 0444
         items {
-          version = "latest"
+          version = google_secret_manager_secret_version.dex_config_data.version
           path    = "config.yaml"
           mode    = 292 # 0444
         }
@@ -186,8 +186,6 @@ resource "google_cloud_run_v2_service" "services" {
       }
     }
   }
-
-  depends_on = [google_secret_manager_secret_version.dex_config_data]
 }
 
 resource "google_cloud_run_v2_service_iam_binding" "dex_web_public" {
