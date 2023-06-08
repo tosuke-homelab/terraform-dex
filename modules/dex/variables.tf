@@ -6,6 +6,6 @@ variable "github_client_id" {
   type = string
 }
 
-variable "github_client_secret" {
+variable "github_client_secret_secret_id" {
   type = string
 }

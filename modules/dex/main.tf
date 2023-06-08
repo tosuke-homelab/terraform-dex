@@ -2,8 +2,7 @@ locals {
   name = "dexidp"
 
   github = {
-    clientID     = var.github_client_id
-    clientSecret = var.github_client_secret
+    clientID = var.github_client_id
   }
 
   db = regex("^(?P<scheme>[^:/?#]+)://(?P<user>[^:/?#]+):(?P<password>[^:/?#]+)@(?P<host>[^:/?#]+)(?::(?P<port>[^:/?#]+))?/(?P<database>[^:/?#]+)$", var.db_url)
@@ -33,7 +32,7 @@ locals {
         name = "GitHub"
         config = {
           clientID     = local.github.clientID
-          clientSecret = local.github.clientSecret
+          clientSecret = "{{ .Env.GITHUB_CLIENT_SECRET }}"
           redirectURI  = "https://id.tosuke.me/callback"
           orgs = [
             { name = "tosuke-homelab" },
@@ -90,7 +89,7 @@ resource "google_secret_manager_secret_iam_member" "dex_config_access" {
 }
 
 data "google_secret_manager_secret" "dex_github_client_secret" {
-  secret_id = "dexidp-github-client-secret"
+  secret_id = var.github_client_secret_secret_id
 }
 
 resource "google_secret_manager_secret_iam_member" "dex_github_client_secret_access" {
@@ -154,6 +153,16 @@ resource "google_cloud_run_v2_service" "services" {
       ports {
         name           = each.value.ports.name
         container_port = each.value.ports.container_port
+      }
+
+      env {
+        name = "GITHUB_CLIENT_SECRET"
+        value_source {
+          secret_key_ref {
+            secret  = data.google_secret_manager_secret.dex_github_client_secret.name
+            version = "latest"
+          }
+        }
       }
 
       volume_mounts {
