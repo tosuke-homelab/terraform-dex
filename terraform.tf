@@ -30,6 +30,7 @@ module "dex" {
     user               = var.DEX_DB_USER
     password_secret_id = var.DEX_DB_PASSWORD_SECRET_ID
   }
+  db_pass = var.DEX_DB_PASSWORD
   github_client_id               = var.DEX_GITHUB_CLIENT_ID
   github_client_secret_secret_id = var.DEX_GITHUB_CLIENT_SECRET_SECRET_ID
 }
