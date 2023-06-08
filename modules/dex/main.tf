@@ -1,22 +1,17 @@
 locals {
-  name = "dexidp"
-
   github = {
     clientID = var.github_client_id
   }
 
-  db = regex("^(?P<scheme>[^:/?#]+)://(?P<user>[^:/?#]+):(?P<password>[^:/?#]+)@(?P<host>[^:/?#]+)(?::(?P<port>[^:/?#]+))?/(?P<database>[^:/?#]+)$", var.db_url)
-
   config = {
     issuer = "https://id.tosuke.me"
     storage = {
-      type = local.db.scheme
+      type = var.db.type
       config = {
-        host     = local.db.host
-        port     = coalesce(tonumber(local.db.port), local.db.scheme == "mysql" ? 3306 : 5432)
-        user     = local.db.user
-        password = local.db.password
-        database = local.db.database
+        host     = var.db.host
+        user     = var.db.user
+        password = "{{ .Env.DB_PASSWORD }}"
+        database = var.db.name
       }
     }
     web = { http = "0.0.0.0:8080" }
@@ -51,7 +46,7 @@ locals {
   location = "asia-northeast1"
 
   commonLabels = {
-    "app-name" : local.name
+    "app-name" : "dexidp"
   }
 
   serviceTemplate = {
@@ -60,8 +55,8 @@ locals {
 }
 
 resource "google_service_account" "dex_sa" {
-  account_id  = "${local.name}-sa"
-  description = "Service Account for ${local.name}"
+  account_id  = "dexidp-sa"
+  description = "Service Account for dexidp"
 }
 
 resource "google_secret_manager_secret" "dex_config" {
@@ -84,6 +79,16 @@ resource "google_secret_manager_secret_version" "dex_config_data" {
 
 resource "google_secret_manager_secret_iam_member" "dex_config_access" {
   secret_id = google_secret_manager_secret.dex_config.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.dex_sa.email}"
+}
+
+data "google_secret_manager_secret" "dex_db_password" {
+  secret_id = var.db.password_secret_id
+}
+
+resource "google_secret_manager_secret_iam_member" "dex_db_password_access" {
+  secret_id = data.google_secret_manager_secret.dex_db_password.id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.dex_sa.email}"
 }
@@ -118,7 +123,7 @@ locals {
 resource "google_cloud_run_v2_service" "services" {
   for_each = local.services
 
-  name     = "${local.name}-${each.key}"
+  name     = "dexidp-${each.key}"
   ingress  = "INGRESS_TRAFFIC_ALL"
   location = local.location
 
@@ -160,6 +165,16 @@ resource "google_cloud_run_v2_service" "services" {
         value_source {
           secret_key_ref {
             secret  = data.google_secret_manager_secret.dex_github_client_secret.name
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DB_PASSWORD"
+        value_source {
+          secret_key_ref {
+            secret  = data.google_secret_manager_secret.dex_db_password.name
             version = "latest"
           }
         }
