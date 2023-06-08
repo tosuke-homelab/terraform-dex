@@ -17,7 +17,8 @@ variable "DEX_GITHUB_CLIENT_ID" {
   type        = string
   description = "The GitHub OAuth client ID"
 }
-variable "DEX_GITHUB_CLIENT_SECRET" {
+
+variable "DEX_GITHUB_CLIENT_SECRET_SECRET_ID" {
   type        = string
-  description = "The GitHub OAuth client secret"
+  description = "The GCP Secret ID of the GitHub OAuth client secret"
 }

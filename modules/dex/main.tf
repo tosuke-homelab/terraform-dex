@@ -90,7 +90,7 @@ resource "google_secret_manager_secret_iam_member" "dex_config_access" {
 }
 
 data "google_secret_manager_secret" "dex_github_client_secret" {
-  secret_id = "dexidp-github-client-secret"
+  secret_id = var.github_client_secret_secret_id
 }
 
 resource "google_secret_manager_secret_iam_member" "dex_github_client_secret_access" {

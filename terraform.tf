@@ -22,8 +22,8 @@ provider "google" {
 }
 
 module "dex" {
-  source               = "./modules/dex"
-  db_url               = var.DEX_DB_URL
-  github_client_id     = var.DEX_GITHUB_CLIENT_ID
-  github_client_secret = var.DEX_GITHUB_CLIENT_SECRET
+  source                         = "./modules/dex"
+  db_url                         = var.DEX_DB_URL
+  github_client_id               = var.DEX_GITHUB_CLIENT_ID
+  github_client_secret_secret_id = var.DEX_GITHUB_CLIENT_SECRET_SECRET_ID
 }
