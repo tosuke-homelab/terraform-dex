@@ -2,8 +2,7 @@ locals {
   name = "dexidp"
 
   github = {
-    clientID     = var.github_client_id
-    clientSecret = var.github_client_secret
+    clientID = var.github_client_id
   }
 
   db = regex("^(?P<scheme>[^:/?#]+)://(?P<user>[^:/?#]+):(?P<password>[^:/?#]+)@(?P<host>[^:/?#]+)(?::(?P<port>[^:/?#]+))?/(?P<database>[^:/?#]+)$", var.db_url)
