@@ -46,7 +46,7 @@ locals {
   location = "asia-northeast1"
 
   commonLabels = {
-    "app-name" : local.name
+    "app-name" : "dexidp"
   }
 
   serviceTemplate = {
