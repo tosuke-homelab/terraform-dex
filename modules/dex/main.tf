@@ -1,6 +1,7 @@
 locals {
   github = {
-    clientID = var.github_client_id
+    clientID                = var.github_connector.client_id
+    clientSecretGCPSecretID = var.github_connector.client_secret_secret_id
   }
 
   config = {
@@ -94,7 +95,7 @@ resource "google_secret_manager_secret_iam_member" "dex_db_password_access" {
 }
 
 data "google_secret_manager_secret" "dex_github_client_secret" {
-  secret_id = var.github_client_secret_secret_id
+  secret_id = local.github.clientSecretGCPSecretID
 }
 
 resource "google_secret_manager_secret_iam_member" "dex_github_client_secret_access" {
