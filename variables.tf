@@ -8,11 +8,31 @@ variable "PROJECT_REGION" {
   description = "The region to deploy to"
 }
 
-variable "DEX_DB_URL" {
+variable "DEX_DB_HOST" {
   type        = string
-  description = "The URL of the database to connect to"
+  description = "The database host"
 }
 
+variable "DEX_DB_TYPE" {
+  type        = string
+  description = "The database type"
+}
+
+variable "DEX_DB" {
+  type = string
+  description = "The database name"
+}
+
+variable "DEX_DB_USER" {
+  type        = string
+  description = "The database user"
+}
+
+variable "DEX_DB_PASSWORD_SECRET_ID" {
+  type        = string
+  description = "The GCP Secret ID of the database password"
+}
+  
 variable "DEX_GITHUB_CLIENT_ID" {
   type        = string
   description = "The GitHub OAuth client ID"
