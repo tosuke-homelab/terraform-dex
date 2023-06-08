@@ -5,15 +5,18 @@ locals {
     clientID = var.github_client_id
   }
 
+  db = regex("^(?P<scheme>[^:/?#]+)://(?P<user>[^:/?#]+):(?P<password>[^:/?#]+)@(?P<host>[^:/?#]+)(?::(?P<port>[^:/?#]+))?/(?P<database>[^:/?#]+)$", var.db_url)
+
   config = {
     issuer = "https://id.tosuke.me"
     storage = {
-      type = var.db.type
+      type = local.db.scheme
       config = {
-        host     = var.db.host
-        user     = var.db.user
-        password = "{{ .Env.DB_PASSWORD }}"
-        database = var.db.name
+        host     = local.db.host
+        port     = coalesce(tonumber(local.db.port), local.db.scheme == "mysql" ? 3306 : 5432)
+        user     = local.db.user
+        password = local.db.password
+        database = local.db.database
       }
     }
     web = { http = "0.0.0.0:8080" }
@@ -81,16 +84,6 @@ resource "google_secret_manager_secret_version" "dex_config_data" {
 
 resource "google_secret_manager_secret_iam_member" "dex_config_access" {
   secret_id = google_secret_manager_secret.dex_config.id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.dex_sa.email}"
-}
-
-data "google_secret_manager_secret" "dex_db_password" {
-  secret_id = var.db.password_secret_id
-}
-
-resource "google_secret_manager_secret_iam_member" "dex_db_password_access" {
-  secret_id = data.google_secret_manager_secret.dex_db_password.id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.dex_sa.email}"
 }
