@@ -33,7 +33,7 @@ locals {
         name = "GitHub"
         config = {
           clientID     = local.github.clientID
-          clientSecret = local.github.clientSecret
+          clientSecret = "{{ .Env.GITHUB_CLIENT_SECRET }}"
           redirectURI  = "https://id.tosuke.me/callback"
           orgs = [
             { name = "tosuke-homelab" },
@@ -154,6 +154,16 @@ resource "google_cloud_run_v2_service" "services" {
       ports {
         name           = each.value.ports.name
         container_port = each.value.ports.container_port
+      }
+
+      env {
+        name = "GITHUB_CLIENT_SECRET"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.dex_github_client_secret.name
+            version = "latest"
+          }
+        }
       }
 
       volume_mounts {
