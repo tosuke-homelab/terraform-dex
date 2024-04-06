@@ -1,0 +1,25 @@
+issuer: https://id.tosuke.me
+web:
+  http: 0.0.0.0:8080
+grpc:
+  addr: 0.0.0.0:8081
+  reflection: true
+storage:
+  type: mysql
+  config:
+    host: ${DB_HOST}
+    user: ${DB_USER}
+    password: ${DB_PASSWORD}
+    database: ${DB_NAME}
+connectors:
+  - type: github
+    id: github
+    name: GitHub
+    config:
+      clientID: ${GITHUB_CLIENT_ID}
+      clientSecret: ${GITHUB_CLIENT_SECRET}
+      redirectURI: https://id.tosuke.me/callback
+      orgs:
+        - name: tosuke-homelab
+        - name: linkage-community
+          teams: [developers]
